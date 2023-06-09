@@ -1,0 +1,45 @@
+﻿@page
+@model MicroOndasModel
+@{
+    ViewData["Title"] = "Micro-ondas";
+}
+
+<h2>Micro-ondas</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Minutos">Minutos:</label>
+        <input type="number" class="form-control" id="Minutos" name="Minutos" min="0" max="2" step="1" value="@Model.Minutos" required>
+    </div>
+    <div class="form-group">
+        <label for="Segundos">Segundos:</label>
+        <input type="number" class="form-control" id="Segundos" name="Segundos" min="0" max="59" step="1" value="@Model.Segundos" required>
+    </div>
+    <div class="form-group">
+        <label for="Potencia">Potencia:</label>
+        <input type="number" class="form-control" id="Potencia" name="Potencia" min="1" max="10" step="1" value="@Model.Potencia">
+    </div>
+    <button type="submit" class="btn btn-primary">Iniciar aquecimento</button>
+    <button type="submit" formaction="/MicroOndas/OnPostIniciarAquecimento" class="btn btn-secondary">Iniciar</button>
+    <button type="submit" formaction="/MicroOndas/OnPostParar" class="btn btn-danger">Parar</button>
+</form>
+
+@if (Model.AquecimentoemProgresso)
+{
+    <h4>Aquecimento em progresso:</h4>
+    <p>@Model.ProgressodeAquecimentoString</p>
+}
+
+@if (!string.IsNullOrEmpty(Model.TempoExibicao))
+{
+    <h4>Tempo restante:</h4>
+    <p>@Model.TempoExibicao</p>
+}
+
+@if (!ModelState.IsValid)
+{
+    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <p class="text-danger">@error.ErrorMessage</p>
+    }
+}
