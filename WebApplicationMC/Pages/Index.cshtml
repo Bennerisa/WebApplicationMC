@@ -1,5 +1,5 @@
 ﻿@page
-@model MicroOndasModel
+@model MicroOndas.MicroOndasModel
 @{
     ViewData["Title"] = "Micro-ondas";
 }
@@ -16,18 +16,17 @@
         <input type="number" class="form-control" id="Segundos" name="Segundos" min="0" max="59" step="1" value="@Model.Segundos" required>
     </div>
     <div class="form-group">
-        <label for="Potencia">Potencia:</label>
+        <label for="Potencia">Potência:</label>
         <input type="number" class="form-control" id="Potencia" name="Potencia" min="1" max="10" step="1" value="@Model.Potencia">
     </div>
-    <button type="submit" class="btn btn-primary">Iniciar aquecimento</button>
-    <button type="submit" formaction="/MicroOndas/OnPostIniciarAquecimento" class="btn btn-secondary">Iniciar</button>
-    <button type="submit" formaction="/MicroOndas/OnPostParar" class="btn btn-danger">Parar</button>
+    <button type="submit" class="btn btn-primary" formaction="OnPostIniciarAquecimento">Iniciar aquecimento</button>
+    <button type="submit" class="btn btn-danger" formaction="OnPostParar">Parar</button>
 </form>
 
-@if (Model.AquecimentoemProgresso)
+@if (Model.AquecimentoEmProgresso)
 {
     <h4>Aquecimento em progresso:</h4>
-    <p>@Model.ProgressodeAquecimentoString</p>
+    <p>@Model.ProgressoDeAquecimentoString</p>
 }
 
 @if (!string.IsNullOrEmpty(Model.TempoExibicao))

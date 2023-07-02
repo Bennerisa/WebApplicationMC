@@ -1,94 +1,89 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-public class MicroOndasModel : PageModel
+namespace MicroOndas
 {
-    [BindProperty]
-    public int Minutos { get; set; }
-
-    [BindProperty]
-    public int Segundos { get; set; }
-
-    [BindProperty]
-    public string? ProgressodeAquecimentoString { get; set; }
-
-    public int Potencia { get; set; } = 10;
-
-    public string? TempoExibicao { get; set; }
-
-    public bool AquecimentoemProgresso { get; set; }
-
-    public int TempoRestante { get; set; }
-
-    public IActionResult OnPostIniciarAquecimento()
+    [BindProperties]
+    public class MicroOndasModel : PageModel
     {
-        if (AquecimentoemProgresso)
+        public int Minutos { get; set; }
+        public int Segundos { get; set; }
+        public string ProgressoDeAquecimentoString { get; set; }
+        public int Potencia { get; set; } = 10;
+        public string TempoExibicao { get; set; }
+        public bool AquecimentoEmProgresso { get; set; }
+        public int TempoRestante { get; set; }
+
+        public IActionResult OnPostIniciarAquecimento()
         {
-            TempoRestante += 30;
-            return Page();
+            if (AquecimentoEmProgresso)
+            {
+                TempoRestante += 30;
+                return RedirectToPage();
+            }
+
+            if (Segundos < 1) Segundos = 1;
+            if (Minutos < 0) Minutos = 0;
+            if (Segundos >= 60 && Segundos < 100)
+            {
+                Minutos = Segundos / 60;
+                Segundos %= 60;
+            }
+            else if (Segundos >= 100)
+            {
+                Minutos = Segundos / 100;
+                Segundos %= 100;
+            }
+
+            if (Potencia < 1 || Potencia > 10)
+            {
+                ModelState.AddModelError(string.Empty, "Por favor, insira um valor de Potência válido (entre 1 e 10)");
+                return RedirectToPage();
+            }
+
+            if (Minutos == 0 && (Segundos < 1 || Segundos > 120))
+            {
+                ModelState.AddModelError(string.Empty, "Por favor insira um tempo válido (entre 1 segundo e 2 minutos).");
+                return RedirectToPage();
+            }
+
+            ProgressoDeAquecimentoString = GerarProgressoDeAquecimentoString();
+
+            TempoExibicao = $"{Minutos}:{Segundos:D2}";
+
+            AquecimentoEmProgresso = true;
+
+            TempoRestante = Minutos * 60 + Segundos;
+
+            return RedirectToPage();
         }
 
-        if (Segundos < 1) Segundos = 1;
-        if (Minutos < 0) Minutos = 0;
-        if (Segundos > 60 && Segundos < 100)
+        public IActionResult OnPostParar()
         {
-            Minutos = Segundos / 60;
-            Segundos = Segundos % 60;
-        }
-        else if (Segundos >= 100)
-        {
-            Minutos = Segundos / 100;
-            Segundos = Segundos % 100;
+            AquecimentoEmProgresso = false;
+            TempoRestante = 0;
+            TempoExibicao = null;
+            ProgressoDeAquecimentoString = null;
+
+            return RedirectToPage();
         }
 
-        if (Potencia < 1 || Potencia > 10)
+        private string GerarProgressoDeAquecimentoString()
         {
-            ModelState.AddModelError(string.Empty, "Por favor, insira um valor de Potência válido (entre 1 e 10)");
-            return Page();
+            string progresso = string.Empty;
+            int caracteresPorSegundo = 10 - Potencia + 1;
+            int totalCaracteres = Minutos * 60 + Segundos;
+
+            for (int i = 0; i < totalCaracteres; i++)
+            {
+                progresso += ".";
+                if ((i + 1) % caracteresPorSegundo == 0)
+                    progresso += " ";
+            }
+
+            progresso += " Aquecimento concluído";
+
+            return progresso;
         }
-
-        if (Minutos == 0 && (Segundos < 1 || Segundos > 120))
-        {
-            ModelState.AddModelError(string.Empty, "Por favor insira um tempo válido (entre 1 segundo e 2 minutos).");
-            return Page();
-        }
-
-        ProgressodeAquecimentoString = GenerateProgressodeAquecimentoString();
-
-        TempoExibicao = $"{Minutos}:{Segundos:D2}";
-
-        AquecimentoemProgresso = true;
-
-        TempoRestante = Minutos * 60 + Segundos;
-
-        return Page();
-    }
-
-    public IActionResult OnPostParar()
-    {
-        AquecimentoemProgresso = false;
-        TempoRestante = 0;
-        TempoExibicao = null;
-        ProgressodeAquecimentoString = null;
-
-        return Page();
-    }
-
-    private string GenerateProgressodeAquecimentoString()
-    {
-        string progresso = string.Empty;
-        int caracteresPorSegundo = 10 - Potencia + 1;
-        int totalCaracteres = Minutos * 60 + Segundos;
-
-        for (int i = 0; i < totalCaracteres; i++)
-        {
-            progresso += ".";
-            if ((i + 1) % caracteresPorSegundo == 0)
-                progresso += " ";
-        }
-
-        progresso += " Aquecimento concluído";
-
-        return progresso;
     }
 }
