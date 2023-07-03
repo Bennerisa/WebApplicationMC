@@ -1,6 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.8" />
+	  <Compile Remove="Pages\NovaPasta1\**" />
+	  <Compile Remove="Pages\NovaPasta2\**" />
+	  <Compile Remove="Pages\NovaPasta\**" />
+	  <Compile Remove="Pages\Shared\NovaPasta\**" />
+	  <Content Remove="Pages\NovaPasta1\**" />
+	  <Content Remove="Pages\NovaPasta2\**" />
+	  <Content Remove="Pages\NovaPasta\**" />
+	  <Content Remove="Pages\Shared\NovaPasta\**" />
+	  <EmbeddedResource Remove="Pages\NovaPasta1\**" />
+	  <EmbeddedResource Remove="Pages\NovaPasta2\**" />
+	  <EmbeddedResource Remove="Pages\NovaPasta\**" />
+	  <EmbeddedResource Remove="Pages\Shared\NovaPasta\**" />
+	  <None Remove="Pages\NovaPasta1\**" />
+	  <None Remove="Pages\NovaPasta2\**" />
+	  <None Remove="Pages\NovaPasta\**" />
+	  <None Remove="Pages\Shared\NovaPasta\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Pages\IniciarAquecimento.cshtml.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Remove="Pages\IniciarAquecimento.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
 	</ItemGroup>
 
 	<PropertyGroup>

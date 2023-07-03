@@ -1,5 +1,5 @@
 ﻿@page
-@model MicroOndas.MicroOndasModel
+@model microOndas.MicroOndasModel
 @{
     ViewData["Title"] = "Micro-ondas";
 }
@@ -8,19 +8,16 @@
 
 <form method="post">
     <div class="form-group">
-        <label for="Minutos">Minutos:</label>
-        <input type="number" class="form-control" id="Minutos" name="Minutos" min="0" max="2" step="1" value="@Model.Minutos" required>
+        <label for="Tempo">Tempo (segundos):</label>
+        <input type="number" class="form-control" id="Tempo" name="Tempo" min="1" max="120" step="1" value="@Model.Tempo" required>
     </div>
     <div class="form-group">
-        <label for="Segundos">Segundos:</label>
-        <input type="number" class="form-control" id="Segundos" name="Segundos" min="0" max="59" step="1" value="@Model.Segundos" required>
-    </div>
-    <div class="form-group">
-        <label for="Potencia">Potência:</label>
+        <label for="Potencia">Potência (1-10):</label>
         <input type="number" class="form-control" id="Potencia" name="Potencia" min="1" max="10" step="1" value="@Model.Potencia">
     </div>
-    <button type="submit" class="btn btn-primary" formaction="OnPostIniciarAquecimento">Iniciar aquecimento</button>
-    <button type="submit" class="btn btn-danger" formaction="OnPostParar">Parar</button>
+    <button type="button" onclick="location.href='@Url.Page("Index", "OngetIniciarAquecimento")'">Iniciar Aquecimento</button>
+    <button type="button" onclick="location.href='@Url.Page("Index", "OngetIniciarAquecimentoRapido")'">Início Rápido</button>
+    <button type="button" onclick="location.href='@Url.Page("Index", "OngetParar")'">Pausar/Cancelar</button>
 </form>
 
 @if (Model.AquecimentoEmProgresso)

@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace MicroOndas
+namespace microOndas
 {
     [BindProperties]
     public class MicroOndasModel : PageModel
     {
-        public int Minutos { get; set; }
-        public int Segundos { get; set; }
-        public string ProgressoDeAquecimentoString { get; set; }
+        public int Tempo { get; set; }
+        public string? ProgressoDeAquecimentoString { get; set; }
         public int Potencia { get; set; } = 10;
-        public string TempoExibicao { get; set; }
+        public string? TempoExibicao { get; set; }
         public bool AquecimentoEmProgresso { get; set; }
         public int TempoRestante { get; set; }
 
-        public IActionResult OnPostIniciarAquecimento()
+        public IActionResult OngetIniciarAquecimento()
         {
             if (AquecimentoEmProgresso)
             {
@@ -22,43 +21,44 @@ namespace MicroOndas
                 return RedirectToPage();
             }
 
-            if (Segundos < 1) Segundos = 1;
-            if (Minutos < 0) Minutos = 0;
-            if (Segundos >= 60 && Segundos < 100)
+            if (Tempo < 1 || Tempo > 120)
             {
-                Minutos = Segundos / 60;
-                Segundos %= 60;
-            }
-            else if (Segundos >= 100)
-            {
-                Minutos = Segundos / 100;
-                Segundos %= 100;
+                ModelState.AddModelError(string.Empty, "Por favor, insira um tempo válido (entre 1 segundo e 2 minutos).");
+                return Page();
             }
 
             if (Potencia < 1 || Potencia > 10)
             {
-                ModelState.AddModelError(string.Empty, "Por favor, insira um valor de Potência válido (entre 1 e 10)");
-                return RedirectToPage();
-            }
-
-            if (Minutos == 0 && (Segundos < 1 || Segundos > 120))
-            {
-                ModelState.AddModelError(string.Empty, "Por favor insira um tempo válido (entre 1 segundo e 2 minutos).");
-                return RedirectToPage();
+                ModelState.AddModelError(string.Empty, "Por favor, insira um valor de Potência válido (entre 1 e 10).");
+                return Page();
             }
 
             ProgressoDeAquecimentoString = GerarProgressoDeAquecimentoString();
 
-            TempoExibicao = $"{Minutos}:{Segundos:D2}";
+            TempoExibicao = FormatarTempoExibicao(Tempo);
 
             AquecimentoEmProgresso = true;
 
-            TempoRestante = Minutos * 60 + Segundos;
+            TempoRestante = Tempo;
 
             return RedirectToPage();
         }
 
-        public IActionResult OnPostParar()
+        public IActionResult OngetIniciarAquecimentoRapido()
+        {
+            if (AquecimentoEmProgresso)
+            {
+                TempoRestante += 30;
+                return RedirectToPage();
+            }
+
+            Tempo = 30;
+            Potencia = 10;
+
+            return OngetIniciarAquecimento();
+        }
+
+        public IActionResult OngetParar()
         {
             AquecimentoEmProgresso = false;
             TempoRestante = 0;
@@ -72,9 +72,8 @@ namespace MicroOndas
         {
             string progresso = string.Empty;
             int caracteresPorSegundo = 10 - Potencia + 1;
-            int totalCaracteres = Minutos * 60 + Segundos;
 
-            for (int i = 0; i < totalCaracteres; i++)
+            for (int i = 0; i < Tempo; i++)
             {
                 progresso += ".";
                 if ((i + 1) % caracteresPorSegundo == 0)
@@ -84,6 +83,14 @@ namespace MicroOndas
             progresso += " Aquecimento concluído";
 
             return progresso;
+        }
+
+        private string FormatarTempoExibicao(int tempo)
+        {
+            int minutos = tempo / 60;
+            int segundos = tempo % 60;
+
+            return $"{minutos}:{segundos:D2}";
         }
     }
 }
